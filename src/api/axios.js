@@ -1,11 +1,13 @@
 import axios from "axios";
+import { API_URL } from "config/config";
 
-const baseURL = process.env.VITE_API_URI || "http://bloger.test/api/";
-const timeout = +(process.env.VITE_API_TIMEOUT) || 20000;
+// Tăng timeout mặc định lên 60s để hỗ trợ các thao tác dài (upload file, TTS...).
+// Riêng TTS sẽ ghi đè timeout lên 5 phút trong generateTTSAudioAPI.
+const timeout = +(process.env.REACT_API_TIMEOUT) || 60000;
 
 const axiosinstance = axios.create({
-  baseURL,
-  timeout,
+    baseURL: API_URL,
+    timeout,
 });
 
 // PHẦN QUAN TRỌNG NHẤT: Gắn Token vào mọi request gửi đi
@@ -31,7 +33,7 @@ axiosinstance.interceptors.request.use(
     (error) => {
         return Promise.reject(error);
     }
-    
+
 );
 
 // axiosinstance.interceptors.request.use(
@@ -66,7 +68,7 @@ axiosinstance.interceptors.response.use(
         }
         return response.data || response;
     },
-    function (error) {  
+    function (error) {
         // Nếu Server trả về 401, có thể Token hết hạn, bạn nên xóa auth và cho login lại
         if (error.response && error.response.status === 401) {
             // localStorage.removeItem("admin_auth");
