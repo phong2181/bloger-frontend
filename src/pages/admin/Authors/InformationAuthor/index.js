@@ -14,7 +14,7 @@ import { MdEmail } from "react-icons/md";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./style.scss";
-import { STORAGE_URL } from "config/config";
+import { STORAGE_URL, getStorageUrl } from "config/config";
 
 // ─── COMPONENT: MEDIA HEADER (AVATAR & COVER) ───────────────────────────────
 const MediaHeader = ({
@@ -56,7 +56,7 @@ const MediaHeader = ({
       <div className="cover-wrapper" style={{ width: "100%" }}>
         <img
             src={
-                `${STORAGE_URL}${currentCover}` ||
+                (currentCover ? getStorageUrl(currentCover) : null) ||
                 "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1200"
             }
             alt="Cover"
@@ -82,7 +82,7 @@ const MediaHeader = ({
       {/* Khung Ảnh Đại Diện (Avatar) */}
       <div className="avatar-position-box">
         <div className={`avatar-container ${isUploading ? "loading" : ""}`}>
-          <img src={avatarPreview || `${STORAGE_URL}${currentAvatar}`} alt="Admin Avatar" className="main-avatar" />
+          <img src={avatarPreview || getStorageUrl(currentAvatar)} alt="Admin Avatar" className="main-avatar" />
           {isEditingInfo && (
             <>
               <label htmlFor="avatar-input" className="upload-avatar-badge">
@@ -348,7 +348,7 @@ const ProfileAdmin = () => {
             <p className="qr-hint">Quét mã QR để mời tác giả một ly cà phê nếu bạn yêu thích các nội dung chia sẻ.</p>
             
             <div className={`qr-image-wrapper ${isEditingInfo ? "editable" : ""}`}>
-              <img src={`${STORAGE_URL}${qrPreview}`} alt="Mã QR Donate Ngân hàng" className="qr-code-img" />
+              <img src={getStorageUrl(qrPreview)} alt="Mã QR Donate Ngân hàng" className="qr-code-img" />
               {isEditingInfo && (
                 <label htmlFor="qr-file-input" className="change-qr-overlay">
                   <FaCamera />

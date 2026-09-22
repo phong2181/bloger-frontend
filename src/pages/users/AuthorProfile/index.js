@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import { FaFacebook, FaQrcode, FaBookOpen, FaFileAlt, FaTiktok, FaUserCheck, FaEnvelope } from "react-icons/fa";
 import { SiZalo } from "react-icons/si";
 import { useGetPublicAuthorProfile } from "api/homePage";
-import { STORAGE_URL } from "config/config";
+import { getStorageUrl } from "config/config";
 import "./style.scss";
 
 const AuthorProfile = () => {
@@ -36,7 +36,7 @@ const AuthorProfile = () => {
       <div
         className="hero-section"
         style={{
-          backgroundImage: profile.cover_url ? `url(${STORAGE_URL}${profile.cover_url})` : "none",
+          backgroundImage: profile.cover_url ? `url(${getStorageUrl(profile.cover_url)})` : "none",
           backgroundColor: profile.cover_url ? undefined : "#f1f5f9",
         }}
       >
@@ -51,7 +51,7 @@ const AuthorProfile = () => {
               <div className="card-body text-center">
                 {profile.avatar ? (
                   <img
-                      src={`${STORAGE_URL}${profile.avatar}`}
+                      src={getStorageUrl(profile.avatar)}
                       className="avatar-img mb-3"
                       alt={authorName}
                       onError={(e) => {
@@ -86,7 +86,7 @@ const AuthorProfile = () => {
             {profile.qr_url && (
               <div className="qr-container mb-4">
                 <h6><FaQrcode /> Ủng hộ tác giả</h6>
-                <img src={`${STORAGE_URL}${profile.qr_url}`} className="qr-code-img" alt="QR Code" />
+                <img src={getStorageUrl(profile.qr_url)} className="qr-code-img" alt="QR Code" />
               </div>
             )}
           </div>

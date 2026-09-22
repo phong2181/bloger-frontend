@@ -5,7 +5,7 @@ import { useGetUsersAD, useAddUserAD, useUpdateUserAD } from "api/homePage/queri
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./style.scss";
-import { STORAGE_URL } from "config/config";
+import { getStorageUrl } from "config/config";
 import { getAdminInfo } from "utils/adminAuth";
 
 const UserManagement = () => {
@@ -173,7 +173,7 @@ const UserManagement = () => {
                                     <td>
                                         {user.avatar ? (
                                             <img 
-                                                src={`${STORAGE_URL}${user.avatar}`} 
+                                                src={getStorageUrl(user.avatar)} 
                                                 alt={user.name} 
                                                 className="user-avatar-sm"
                                             />

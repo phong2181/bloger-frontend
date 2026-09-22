@@ -6,6 +6,8 @@ import { toast } from 'react-hot-toast';
 import './style.scss';
 import { getAdminInfo } from 'utils/adminAuth';
 
+import { getStorageUrl } from "config/config";
+
 const ManagerAuthorsUser = () => {
     const adminInfo = getAdminInfo();
     const isAdmin = adminInfo?.role === "admin";
@@ -413,7 +415,7 @@ const ManagerAuthorsUser = () => {
                                     <img 
                                         src={
                                             selectedUser.avatar 
-                                                ? `http://bloger.test/storage/${selectedUser.avatar}` 
+                                                ? getStorageUrl(selectedUser.avatar)
                                                 : "https://via.placeholder.com/40"
                                         } 
                                         alt={selectedUser.name} 

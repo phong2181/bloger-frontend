@@ -20,6 +20,9 @@ import "./style.scss";
 import ImageUploader from "../ThumbnailUploader";
 import { useGetAddNewPostAD, useGetCategoriesAD, useGetUsersAD } from "api/homePage";
 
+import { API_URL } from "config/config";
+
+
 // ─── Table of Contents ───────────────────────────────────────────────────────
 const TableOfContents = ({ editor }) => {
   const [headings, setHeadings] = useState([]);
@@ -172,7 +175,7 @@ const MenuBar = ({ editor }) => {
     const formData = new FormData();
     formData.append("upload", file);
     const response = await fetch(
-      "http://127.0.0.1:8000/api/admin/upload-image-editor",
+      `${API_URL}/admin/upload-image-editor`,
       {
         method: "POST",
         body: formData,

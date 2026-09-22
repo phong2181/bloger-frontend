@@ -33,6 +33,8 @@ import "react-toastify/dist/ReactToastify.css";
 import CommentSection from "../Comment/CommentBox";
 import AudioPlayer from "../AudioPlayer";
 
+import { getStorageUrl } from "config/config";
+
 const StoryDetail = () => {
     const { slug, id } = useParams(); 
     const navigate = useNavigate();
@@ -312,7 +314,7 @@ const StoryDetail = () => {
             viewCount: rawStory.views || 0,
             status: rawStory.status === 'completed' ? 'Hoàn thành' : 'Đang ra',
             rating: averageRating,
-            image: rawStory.thumbnail ? `http://bloger.test/storage/${rawStory.thumbnail}` : "https://picsum.photos/400/550",
+            image: rawStory.thumbnail ? getStorageUrl(rawStory.thumbnail) : "https://picsum.photos/400/550",
             createdAt: rawStory.created_at ? new Date(rawStory.created_at).toLocaleDateString('vi-VN') : "Chưa cập nhật",
             chapters: chaptersArray.map((ch, index) => ({
                 id: ch.id,

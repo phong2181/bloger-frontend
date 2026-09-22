@@ -11,7 +11,7 @@ import {
 import { getAdminInfo } from "utils/adminAuth";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { STORAGE_URL } from "config/config";
+import { getStorageUrl } from "config/config";
 
 const StoryManagement = () => {
 
@@ -61,7 +61,7 @@ const StoryManagement = () => {
                 summary: story.summary || "",
                 thumbnail: null
             });
-            setPreviewImage(story.thumbnail ? `http://localhost:8000/storage/${story.thumbnail}` : null);
+            setPreviewImage(story.thumbnail ? getStorageUrl(story.thumbnail) : null);
         } else {
             setEditStory(null);
             setFormData({ 
@@ -232,7 +232,7 @@ const StoryManagement = () => {
                                 <td>
                                     <div className="thumb-preview-table">
                                         <img 
-                                            src={story.thumbnail ? `${STORAGE_URL}${story.thumbnail}` : "https://via.placeholder.com/60x80"} 
+                                            src={story.thumbnail ? getStorageUrl(story.thumbnail) : "https://via.placeholder.com/60x80"} 
                                             alt="thumb" 
                                         />
                                     </div>

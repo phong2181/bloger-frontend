@@ -5,7 +5,7 @@ import axios from "axios";
 import { useDeletePost } from "api/homePage";
 import { useNavigate } from "react-router-dom";
 import toast, { Toaster } from "react-hot-toast"; // Import toast và Toaster
-import { STORAGE_URL } from "config/config";
+import { getStorageUrl, API_URL } from "config/config";
 
 const AllPost = () => {
   const [posts, setPosts] = useState([]);
@@ -22,7 +22,7 @@ const AllPost = () => {
 
   const postsPerPage = 15;
 
-  const url = `${process.env.REACT_APP_API_URI}`;
+  const url = `${API_URL}`;
 
   // ✅ Nhận search vào thẳng tham số để tránh stale closure
   const fetchPosts = useCallback(async (search = "") => {
@@ -58,7 +58,7 @@ const AllPost = () => {
   const handleKeyDown = (e) => { if (e.key === "Enter") handleSearch(); };
 
   // Thay thế alert bằng toast khi xóa bài viết
- const handleDelete = (id) => {
+  const handleDelete = (id) => {
     // Hiển thị toast custom để xác nhận xóa
     toast((t) => (
       <div className="confirm-toast-wrapper">
@@ -156,8 +156,8 @@ const AllPost = () => {
   };
 
   useEffect(() => {
-          document.title = "Tất cả bài viết";
-      }, []);
+    document.title = "Tất cả bài viết";
+  }, []);
 
   return (
     <div className="allpost-page">
@@ -258,7 +258,7 @@ const AllPost = () => {
                           <div className="post-main">
                             <img
                               src={post.avatar_post
-                                ? `${STORAGE_URL}/${post.avatar_post}`
+                                ? getStorageUrl(post.avatar_post)
                                 : "/placeholder.png"}
                               className="post-thumbnail"
                               alt="post"
@@ -295,13 +295,13 @@ const AllPost = () => {
                       </td>
                       <td>
                         <div className="action-buttons">
-                          <button 
-                          className="btn-action btn-edit" title="Sửa" onClick={() => handleEdit(post.id)}>
+                          <button
+                            className="btn-action btn-edit" title="Sửa" onClick={() => handleEdit(post.id)}>
                             <FaEdit />
                           </button>
-                          <button 
-                          className="btn-action btn-delete" title="Xóa" onClick={() => handleDelete(post.id)} disabled={deletePost.isPending} >
-                            {deletePost.isPending ? "..." :<FaTrash />}
+                          <button
+                            className="btn-action btn-delete" title="Xóa" onClick={() => handleDelete(post.id)} disabled={deletePost.isPending} >
+                            {deletePost.isPending ? "..." : <FaTrash />}
                           </button>
                         </div>
                       </td>

@@ -23,6 +23,8 @@ import "./style.scss";
 import ImageUploader from "../ThumbnailUploader";
 import { useGetCategoriesAD, useGetUsersAD, useUptatePost, useGetPostDetail } from "api/homePage";
 
+import { STORAGE_URL, API_URL } from "config/config";
+
 // ─── Table of Contents ───────────────────────────────────────────────────────
 const TableOfContents = ({ editor }) => {
   const [headings, setHeadings] = useState([]);
@@ -175,7 +177,7 @@ const MenuBar = ({ editor }) => {
     const formData = new FormData();
     formData.append("upload", file);
     const response = await fetch(
-      "http://127.0.0.1:8000/api/admin/upload-image-editor",
+      `${API_URL}/admin/upload-image-editor`,
       {
         method: "POST",
         body: formData,
@@ -449,7 +451,7 @@ const EditPosts = () => {
       if (source.avatar_post.startsWith("http")) {
         initialPreview = source.avatar_post;
       } else {
-        initialPreview = `http://127.0.0.1:8000/storage/${source.avatar_post}`;
+        initialPreview = `${STORAGE_URL}${source.avatar_post}`;
       }
     }
 

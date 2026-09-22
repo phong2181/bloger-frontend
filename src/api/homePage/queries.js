@@ -9,6 +9,7 @@ import {
     postFooterAPI,
     updateFooterAPI,
     deleteFooterAPI,
+    getPublicFooterAPI,
     postLoginAdminAPI,
     getUsersAPI,
     postAddUserAPI,
@@ -62,7 +63,7 @@ import {
     getAdminMembershipsAPI,
     getAdminRevenueStatsAPI,
     getActiveNotificationAPI,
-    updateAdminNotificationAPI,
+updateAdminNotificationAPI,
     getAdminNotificationDetailAPI,
     deleteChapterAPI,
     postForgotPasswordVerifyCodeAPI,
@@ -71,7 +72,12 @@ import {
     updateProfileAdminAPI,
     getAuthorContentAPI,
     getPublicAuthorProfileAPI,
-    getActiveUser
+getActiveUser,
+    getTTSVoicesAPI,
+    getBackgroundMusicsAPI,
+    addBackgroundMusicAPI,
+    deleteBackgroundMusicAPI,
+    getBackgroundMusicsPublicAPI
 } from "./request";
 
 // 🚀 Hook gửi mã OTP khôi phục mật khẩu
@@ -433,7 +439,7 @@ export const useGetFootersAD = () => {
 export const useAddFooterAD = () => {
     const queryClient = useQueryClient();
     return useMutation({
-        mutationFn: (footerData) => postFooterAPI(footerData),
+        mutationFn: ({ type, data }) => postFooterAPI({ type, data }),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['GetFootersAPI'] });
         },
@@ -443,7 +449,7 @@ export const useAddFooterAD = () => {
 export const useUpdateFooterAD = () => {
     const queryClient = useQueryClient();
     return useMutation({
-        mutationFn: ({ id, data }) => updateFooterAPI(id, data),
+        mutationFn: ({ id, type, data }) => updateFooterAPI({ id, type, data }),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['GetFootersAPI'] });
         },
@@ -453,10 +459,19 @@ export const useUpdateFooterAD = () => {
 export const useDeleteFooterAD = () => {
     const queryClient = useQueryClient();
     return useMutation({
-        mutationFn: (id) => deleteFooterAPI(id),
+        mutationFn: ({ id, type }) => deleteFooterAPI({ id, type }),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['GetFootersAPI'] });
         },
+    });
+};
+
+export const useGetPublicFooter = () => {
+    return useQuery({
+        queryKey: ['GetPublicFooter'],
+        queryFn: () => getPublicFooterAPI(),
+        retry: 1,
+        refetchOnWindowFocus: false,
     });
 };
 
@@ -592,6 +607,22 @@ export const useGetChaptersByStoryAD = (storyId) => {
         enabled: !!storyId, // Chỉ gọi khi có ID
         retry: false,       // Tắt tự động gọi lại khi lỗi
         refetchOnWindowFocus: false, // Tắt tự động load lại khi chuyển tab
+    });
+};
+
+// Hook lấy danh sách giọng đọc TTS từ backend
+export const useGetTTSVoicesAD = () => {
+    const token = localStorage.getItem("adminToken");
+    return useQuery({
+        queryKey: ["GetTTSVoices"],
+        queryFn: async () => {
+            const res = await getTTSVoicesAPI();
+            // res.data chứa { status, data, count }
+            return res?.data?.data || res?.data || [];
+        },
+        enabled: !!token,
+        retry: 1,
+        refetchOnWindowFocus: false,
     });
 };
 
@@ -884,6 +915,63 @@ export const useGetAdminMemberships = () => {
         },
         enabled: !!token,
         retry: 1,
+        refetchOnWindowFocus: false,
+    });
+};
+
+// =========================================================================
+// Background Music (Nhạc nền) - Hooks
+// =========================================================================
+
+// Hook lấy danh sách nhạc nền (Admin)
+export const useGetBackgroundMusicsAD = () => {
+    const token = localStorage.getItem("adminToken");
+    return useQuery({
+        queryKey: ["backgroundMusicsAD"],
+        queryFn: async () => {
+            const res = await getBackgroundMusicsAPI();
+            // Backend trả về { status, data }
+            return res?.data || res || [];
+        },
+        enabled: !!token,
+        retry: 1,
+        refetchOnWindowFocus: false,
+    });
+};
+
+// Hook upload nhạc nền mới (Chỉ Admin)
+export const useAddBackgroundMusicAD = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: (formData) => addBackgroundMusicAPI(formData),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["backgroundMusicsAD"] });
+        },
+    });
+};
+
+// Hook xóa nhạc nền (Chỉ Admin)
+export const useDeleteBackgroundMusicAD = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: (id) => deleteBackgroundMusicAPI(id),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["backgroundMusicsAD"] });
+        },
+    });
+};
+
+// Hook lấy danh sách nhạc nền công khai (Client)
+export const useGetBackgroundMusicsPublic = () => {
+    return useQuery({
+        queryKey: ["backgroundMusicsPublic"],
+        queryFn: async () => {
+            const res = await getBackgroundMusicsPublicAPI();
+            return res?.data || res || [];
+        },
+        retry: 1,
+        staleTime: 5 * 60 * 1000,
+        gcTime: 15 * 60 * 1000,
         refetchOnWindowFocus: false,
     });
 };

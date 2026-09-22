@@ -6,6 +6,7 @@ const END_POINT = {
     CATEGORY: "/admin/category",
     SLIDER: "/admin/sliders",
     FOOTER: "/admin/footer",
+    FOOTER_PUBLIC: "/footer",
     LOGIN: "/admin/login",
     PROFILE: "/admin/profile",
     UPLOAD_AVATAR: "/admin/profile/avatar",
@@ -117,7 +118,32 @@ export const getAdminRevenueStatsAPI = async (year) => {
     });
 };
 
+export const getAdminDashboardStatsAPI = async () => {
+    return await axiosinstance({
+        method: "GET",
+        url: "/admin/dashboard-stats",
+    });
+};
 
+export const getDashboardRecentContentsAPI = async (cursor, perPage = 10) => {
+    const params = { per_page: perPage };
+    if (cursor) params.cursor = cursor;
+    return await axiosinstance({
+        method: "GET",
+        url: "/admin/dashboard/recent-contents",
+        params,
+    });
+};
+
+export const getDashboardActivityLogAPI = async (cursor, perPage = 10) => {
+    const params = { per_page: perPage };
+    if (cursor) params.cursor = cursor;
+    return await axiosinstance({
+        method: "GET",
+        url: "/admin/dashboard/activity-log",
+        params,
+    });
+};
 
 // API tạo yêu cầu thanh toán (Client) - BỎ HEADERS THỦ CÔNG
 export const postCreatePaymentAPI = async (data) => {
@@ -378,7 +404,7 @@ export const postAddnewPostAPI = async (data) => {
     });
 }
 
-// API Lấy danh sách footer
+// API Lấy danh sách footer (Admin)
 export const getFootersAPI = async () => {
     return await axiosinstance({
         method: "GET",
@@ -386,29 +412,38 @@ export const getFootersAPI = async () => {
     });
 };
 
-// API Thêm footer mới
-export const postFooterAPI = async (data) => {
+// API Thêm footer mới (brand/link/slide)
+export const postFooterAPI = async ({ type, data }) => {
     return await axiosinstance({
         method: "POST",
         url: END_POINT.FOOTER,
-        data: data,
+        data: { type, data },
     });
 };
 
-// API Sửa footer
-export const updateFooterAPI = async (id, data) => {
+// API Cập nhật footer (brand/link/slide)
+export const updateFooterAPI = async ({ id, type, data }) => {
     return await axiosinstance({
         method: "PUT",
-        url: `${END_POINT.FOOTER}/${id}`,
-        data: data,
+        url: `${END_POINT.FOOTER}/${id || 0}`,
+        data: { type, data },
     });
 };
 
-// API Xóa footer
-export const deleteFooterAPI = async (id) => {
+// API Xóa footer item (link/slide)
+export const deleteFooterAPI = async ({ id, type }) => {
     return await axiosinstance({
         method: "DELETE",
         url: `${END_POINT.FOOTER}/${id}`,
+        data: { type },
+    });
+};
+
+// API Lấy footer công khai (User)
+export const getPublicFooterAPI = async () => {
+    return await axiosinstance({
+        method: "GET",
+        url: END_POINT.FOOTER_PUBLIC,
     });
 };
 
@@ -552,6 +587,61 @@ export const getChaptersByStoryAPI = async (storyId) => {
         url: `/chapters/list/${storyId}`,
     });
 };
+
+// =========================================================================
+// TTS (Piper) - Backend
+// =========================================================================
+
+// Lấy danh sách giọng đọc từ backend (quét model trong storage/app/tts/models)
+export const getTTSVoicesAPI = async () => {
+    const token = localStorage.getItem("adminToken");
+    return await axiosinstance({
+        method: "GET",
+        url: "/admin/tts/voices",
+        headers: { "Authorization": `Bearer ${token}` },
+    });
+};
+
+// Gọi backend sinh audio từ text + voice. Trả về Blob binary (WAV).
+// - isPreview=1 → POST /admin/tts/preview  (nghe thử, cắt 300 ký tự)
+// - isPreview=0 → POST /admin/tts/synthesize (toàn bộ văn bản)
+export const generateTTSAudioAPI = async ({ text, model, speed, isPreview = 0, background_music_id = null, bg_volume = 15 }) => {
+    const token = localStorage.getItem("adminToken");
+    const formData = new FormData();
+    formData.append("text", text);
+    formData.append("voice", model); // Backend nhận field "voice", không phải "model"
+    formData.append("speed", speed || 1.0);
+    formData.append("is_preview", isPreview);
+
+    // Nhạc nền (tùy chọn) - trộn vào file giọng đọc
+if (background_music_id) {
+        formData.append("background_music_id", background_music_id);
+        formData.append("bg_volume", bg_volume || 15);
+    }
+
+    // Chọn endpoint đúng: preview (nghe thử) hoặc synthesize (sinh đầy đủ)
+    const endpoint = isPreview ? "/admin/tts/preview" : "/admin/tts/synthesize";
+
+    return await axiosinstance({
+        method: "POST",
+        url: endpoint,
+        data: formData,
+        headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "multipart/form-data",
+        },
+        responseType: "blob",
+        // TTS (Piper) chạy local nên mất nhiều thời gian hơn các request thường.
+        // Ghi đè timeout mặc định 20s -> 5 phút để tránh lỗi "timeout of 20000ms exceeded".
+        timeout: 300000,
+        // Cho phép nhận file audio lớn (blob WAV) trả về từ backend.
+        maxContentLength: Infinity,
+        maxBodyLength: Infinity,
+    });
+};
+// =========================================================================
+// END TTS
+// =========================================================================
 
 // Đăng chương audio mới
 export const addChapterAPI = async (formData) => {
@@ -741,6 +831,52 @@ export const getPublicAuthorProfileAPI = async (authorName) => {
     return await axiosinstance({
         method: "GET",
         url: `/author/${encodeURIComponent(authorName)}/profile`
+    });
+};
+
+// =========================================================================
+// Background Music (Nhạc nền) - Quản lý
+// =========================================================================
+
+// Lấy danh sách nhạc nền (Admin)
+export const getBackgroundMusicsAPI = async () => {
+    const token = localStorage.getItem("adminToken");
+    return await axiosinstance({
+        method: "GET",
+        url: "/admin/background-musics",
+        headers: { "Authorization": `Bearer ${token}` }
+    });
+};
+
+// Upload nhạc nền mới (Chỉ Admin)
+export const addBackgroundMusicAPI = async (formData) => {
+    const token = localStorage.getItem("adminToken");
+    return await axiosinstance({
+        method: "POST",
+        url: "/admin/background-musics",
+        data: formData,
+        headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "multipart/form-data"
+        }
+    });
+};
+
+// Xóa nhạc nền (Chỉ Admin)
+export const deleteBackgroundMusicAPI = async (id) => {
+    const token = localStorage.getItem("adminToken");
+    return await axiosinstance({
+        method: "DELETE",
+        url: `/admin/background-musics/${id}`,
+        headers: { "Authorization": `Bearer ${token}` }
+    });
+};
+
+// Lấy danh sách nhạc nền công khai (Client)
+export const getBackgroundMusicsPublicAPI = async () => {
+    return await axiosinstance({
+        method: "GET",
+        url: "/background-musics"
     });
 };
 

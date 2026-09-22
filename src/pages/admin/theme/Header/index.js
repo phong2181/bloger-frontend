@@ -1,11 +1,11 @@
-﻿import { FaSignOutAlt } from "react-icons/fa";
+import { FaSignOutAlt } from "react-icons/fa";
 import { MdEmail, MdNotifications } from "react-icons/md";
 import "./style.scss";
 import { memo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ROUTES } from "utils/route";
 import { logoutAdmin, getAdminInfo } from "utils/adminAuth";
-import { STORAGE_URL } from "config/config";
+import { getStorageUrl } from "config/config";
 
 
 const HeaderAD = ({ child, ...props }) => {
@@ -75,7 +75,7 @@ const HeaderAD = ({ child, ...props }) => {
             >
               {adminInfo?.avatar ? (
                 <img
-                  src={`${STORAGE_URL}${adminInfo.avatar}`}
+                  src={getStorageUrl(adminInfo.avatar)}
                   alt={adminInfo?.name}
                   className="user-avatar"
                 />

@@ -24,7 +24,7 @@ import "./style.scss";
 // =========================================================================
 // 1. COMPONENT CON: QUẢN LÝ CỘT 1 (THÔNG TIN THƯƠNG HIỆU & MXH)
 // =========================================================================
-const BrandColumnForm = ({ footers, updateMutation }) => {
+const BrandColumnForm = ({ footers, addMutation }) => {
     const [formData, setFormData] = useState({
         desc: "",
         facebook: "",
@@ -46,7 +46,7 @@ const BrandColumnForm = ({ footers, updateMutation }) => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            await updateMutation.mutateAsync({ type: "brand", data: formData });
+            await addMutation.mutateAsync({ type: "brand", data: formData });
             alert("Cập nhật thông tin thương hiệu thành công!");
         } catch (error) {
             console.error("Lỗi cập nhật brand:", error);
@@ -108,7 +108,7 @@ const BrandColumnForm = ({ footers, updateMutation }) => {
                 </div>
             </div>
 
-            <button type="submit" className="btn-submit" disabled={updateMutation.isLoading}>
+            <button type="submit" className="btn-submit" disabled={addMutation.isLoading}>
                 <FaSave className="btn-icon" /> Lưu thay đổi
             </button>
         </form>
@@ -409,7 +409,7 @@ const Footers = () => {
                     {activeTab === "brand" && (
                         <BrandColumnForm 
                             footers={footers} 
-                            updateMutation={updateMutation} 
+                            addMutation={addMutation} 
                         />
                     )}
                     {activeTab === "links" && (

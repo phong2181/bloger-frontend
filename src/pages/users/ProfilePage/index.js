@@ -16,6 +16,8 @@ import {
 import { useUpdateProfile, useGetUserActivityHistory, useGetFavorites } from "api/homePage";
 import "./style.scss";
 
+import { STORAGE_URL } from "config/config";
+
 const ProfilePage = () => {
     const [userInfo, setUserInfo] = useState(null);
     console.log("Hiện: ", userInfo)
@@ -55,7 +57,7 @@ const ProfilePage = () => {
                 if (storedUser.avatar.startsWith('http')) {
                     setAvatarPreview(storedUser.avatar);
                 } else {
-                    setAvatarPreview(`${process.env.REACT_APP_STORAGE_URL || 'http://bloger.test'}/storage/${storedUser.avatar}`);
+                    setAvatarPreview(`${STORAGE_URL}${storedUser.avatar}`);
                 }
             } else {
                 setAvatarPreview("");
@@ -148,7 +150,9 @@ const ProfilePage = () => {
                         if (userData.avatar.startsWith('http')) {
                             setAvatarPreview(userData.avatar);
                         } else {
-                            setAvatarPreview(`${process.env.REACT_APP_STORAGE_URL || 'http://bloger.test'}/storage/${userData.avatar}`);
+                            setAvatarPreview(
+                                `${STORAGE_URL.replace(/\/$/, "")}/${userData.avatar}`
+                                );
                         }
                     }
                 }

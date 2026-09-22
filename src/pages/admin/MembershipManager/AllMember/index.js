@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { FaSearch, FaCrown, FaUserCheck, FaClock, FaDollarSign, FaEllipsisV } from 'react-icons/fa';
 import { useGetAdminMemberships } from 'api/homePage';
 import './style.scss';
-import { STORAGE_URL } from 'config/config';
+import { getStorageUrl } from 'config/config';
 import { getAdminInfo } from 'utils/adminAuth';
 
 const MembershipManager = () => {
@@ -242,7 +242,7 @@ const MembershipManager = () => {
                                                 <div className="user-avatar">
                                                     {item.avatar ? (
                                                         <img
-                                                            src={`${STORAGE_URL}/${item.avatar}`}
+                                                            src={getStorageUrl(item.avatar)}
                                                             alt="avatar"
                                                         />
                                                     ) : (

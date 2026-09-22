@@ -12,7 +12,7 @@ import {
 } from "api/homePage";
 import "./style.scss";
 import moment from "moment/moment";
-import { STORAGE_URL } from "config/config";
+import { getStorageUrl } from "config/config";
 
 // Thay đổi helper check 3 ngày dựa trên ngày đăng chương mới
 const isRecentlyUpdated = (chaptersMaxCreatedAt, storyCreatedAt) => {
@@ -208,7 +208,7 @@ const StoryList = () => {
                             <div className="story-card" key={story.id}>
                                 <Link to={`/story/${story.slug}`} className="card-image-wrapper">
                                     <img
-                                        src={story.thumbnail ? `${STORAGE_URL}${story.thumbnail}` : "https://via.placeholder.com/300x400"}
+                                        src={story.thumbnail ? getStorageUrl(story.thumbnail) : "https://via.placeholder.com/300x400"}
                                         alt={story.title}
                                         onError={(e) => { e.target.src = "https://via.placeholder.com/300x400"; }}
                                     />
