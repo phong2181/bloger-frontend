@@ -20,3 +20,6 @@ export const getStorageUrl = (url, fallback = "") => {
   const path = url.replace(/^\//, "");
   return `${base}/${path}`;
 };
+
+
+// Cloudflare Pages rebuild trigger
